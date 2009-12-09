@@ -1,0 +1,105 @@
+Revision:
+0.5
+  - Option syntax single dash is deprecated in VBox 3.1.x. These should be replaced by a double 
+    dash. (bug 2908385)
+0.4 [2009-07-04]
+  - Backup destination path is shown in logfile (feature request 2806034)
+  - Extracting of default folders is working again; somewhere (probably in 2.0), the CLI-output
+    from VBoxManage for extracting the default folder has been changed (bug 2815159)
+  - Output of vboxtool does now contain 'backup' (feature request 2813155)
+  - Sessions are paused in stead of saved prior to backup (feature request 2805829). Pauzing 
+    has is faster and, more important does not create .sav files (for preserving state). This 
+    makes the restoring proces much simpler, because one does not have the state files into
+    account.
+  - Auto start en stop stopped working in Ubuntu Jaunty (bug 2789649). The init system 
+    is changed in Ubuntu, so that processes don't wait for each other (hence faster boot). 
+    The workaround, is using 'nohup' in vboxtoolinit.
+    Reported bug in Ubuntu: https://bugs.launchpad.net/ubuntu/+bug/372633
+    After the mentioned bug is solved, maybe the workaround must be reverted, depending on the 
+    solution.
+  - Modifying vboxtoolinit to work with OpenSolaris/Solaris (bug 2527710). Modified 
+    vboxtoolinit into su_command="su - $vbox_user -c". the dash is key, as it sets up the 
+    environment properly.
+  - Configurable backup folder (feature request 2213713)
+  - Added a generic -nologo for VBoxManage command (feature request 2393874).
+  - Expanded readme.txt, added configuration details (feature request 2275085).
+  - The change of output format of "VBoxManage list vms" in 2.2 breaks vboxtool (bug 2775886). 
+    This is solved to add a command option --long, whenever VBox 2.2 or higher is used.
+  - When issuing vboxtoolinit, it produced an error. Removed backquotes from command 
+    sections  (bug 2317839).
+  - Documented backup option in help (feature request 2216423).
+  - Added logging to ~/.VirtualBox/vboxtool.log (feature request 2275101).
+  - Pause state was not detected. VboxTool gave state unknown when a session was in paused 
+    state. Now, the correct state is returned (bug 2318332).
+  - Command 'vboxtool stop' did not stop sessions. Apparently, the session did not react on the
+    command 'acpipowerbutton' which should give a smooth shutdown by the OS it self. Now
+    vboxtool issues a 'poweroff' command which is essentially the same as pulling the power plug.
+    Being very effective, but not so nice for the OS. (bug 2317852)
+  - Added option 'vboxtool showconfig', showing config files vboxtool.conf and machines.conf
+    from /etc/vboxtool (feature request 2275280)
+  - Modified output of 'show' and 'showrun' command for consistency and easy text manipulation
+  - Code refactoring, changed all variable name: consistent separator '_'
+
+0.3 [2008-10-16]
+  - Added vboxtoolinit for auto start sessions at boot time and auto save sessions when
+    host is stopped. Depends on /etc/vboxtool/vboxtool.conf. Structure: 
+    vbox_user='<user name>'
+    As for now, there's only one option to configure.
+  - To achieve naming consistency between package name and names of various parts: 
+    - Main script 'vbox' is renamed to 'vboxtool'
+    - Config folder is moved from /etc/vbox to /etc/vboxtool
+
+0.2 [2008-10-02]
+  - Lines in /etc/vbox/machines.conf can be commented out by '#'
+  - Added portforwarding. Structure of /etc/vbox/machines.conf:
+    <session name>,<vrdp port>,<host port>-<guest port>|..."
+    - as many portpairs as needed, can be added
+    - all existing settings under "vboxtool-tcp-<host port>-<guest port>" are considered as
+      'property' of VBoxTool and thus removed prior to setting portforwarding, to obtain a clean 
+      situation with no orphaned settings.
+
+0.1 [2008-09-23] (modifications not under revision control)
+  2008-09-20
+  - Help restructured.
+  - Option --version|version added.
+  2008-09-15
+  - Autostart option. Starts all sessions in a predefined configuration file.
+  2008-09-10
+  - Bug fixed for retrieving pid when sessions are started with the VBoxHeadless command.
+    In contrast to the VBoxManage command, VBoxHeadless does not show the session uuid in the
+    ps command, while that was imperative because filtering (grep) takes place on that uuid. 
+    Solved by filtering on session name; this is less 'secure' as an unique id, but the 
+    session name is displayed by both commands so this is the only solution.
+    Later this can be replaced by the new 'metrics' command, introduced in 2.0.0, but that means
+    the script will only work (for that part at least) for 2.0.0 which is at the moment not desirable.  2008-09-08
+  - Bug fixed for trapping multiple instances of VBoxManage. This is the case 
+    on rpm-based systems where there are multiple symlinks 'VboxManage'
+    - Original line: [ -n $(whereis VBoxManage | awk 'BEGIN{FS="VBoxManage "}{print $2}') ]
+    - Changed to:    [ -n $(whereis VBoxManage | awk 'BEGIN{FS=" "}{print $2}') ]
+  2008-09-02
+  - Backup a specific session: vbox backup <session name>
+    - running sessions are saved and started after backup has completed
+    - this is only a first approach: copy complete vdi file
+      - this is taking a long time because the complete VDI file has to be copied each and every time
+      - this is not a real solution in real production systems
+  - Save a specific session: vbox save <session name>
+  - Start a specific session: vbox save <session name>
+  - Stop all running sessions or a specific session: vbox stop [session name]
+  - Renamed option 'showall' to 'show'
+  - Code refactoring
+  2008-08-19
+  - Renamed from vbox-tool to vbox
+  - Only show saved session on shutdown
+  - Option 'shutdown' changed to 'save' (cause that's what happening)
+  - For running sessions, show runtime info: cpu-load and memory 
+  - Added option 'showrun': retrieve status of running sessions
+  - Added option 'start': start all saved sessions
+    - powered off & aborted sessions are left alone
+  - Added option 'showall': retrieve status of all sessions
+  - No-parameter or incorrect parameter invocation gives usage-page
+  - Added option '--help': shows usage
+  - Show configured vrdp-port while showing and starting sessions
+
+0.0 (never released under revision control)
+  - Initial release 
+  

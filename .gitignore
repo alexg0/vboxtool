@@ -1,0 +1,6 @@
+# editor backup files
+*~
+\#*\#
+
+# svn directory for merging
+.svn/
